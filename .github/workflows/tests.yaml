@@ -98,7 +98,7 @@ jobs:
           DEPLOYMENT_URL=$(npx vercel --token=${{ secrets.VERCEL_TOKEN }})
           echo "DEPLOYMENT_URL=${DEPLOYMENT_URL}" >> $GITHUB_ENV
         env:
-          VERCEL_ORG_ID: ${{secrets.VERCEL_TEAM_ID}}
+          VERCEL_ORG_ID: ${{secrets.VERCEL_ORG_ID}}
           VERCEL_PROJECT_ID: ${{secrets.VERCEL_PROJECT_ID}}
         working-directory: examples/nextjs
 

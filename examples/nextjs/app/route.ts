@@ -7,5 +7,8 @@ export const runtime = "edge";
  * in this environment
  */
 export function GET(_req: Request): Response {
-  return new Response(`isTrue(true) is ${isTrue(true)}`);
+  return Response.json({
+    shouldBeTrue: isTrue(true),
+    shouldBeFalse: isTrue(false),
+    });
 }
