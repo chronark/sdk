@@ -483,7 +483,7 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo "::set-output name=version::v0.0.0-ci.${GITHUB_SHA}"
+        run: echo "::set-output name=version::0.0.0-ci.${GITHUB_SHA}"
 
       - name: Setup Node
         uses: actions/setup-node@v2
@@ -495,8 +495,7 @@ jobs:
 
       - name: Set package version
         run: |
-          version=$(echo ${{ steps.version.outputs.version }} | sed 's/v//g')
-          jq '.version = "$version"' <<< cat package.json > tmp.json
+          jq '.version = "${{ steps.version.outputs.version }}"' <<< cat package.json > tmp.json
           mv tmp.json package.json 
 
       - name: Install Dependencies
@@ -507,5 +506,5 @@ jobs:
 
       - name: Publish ci version
         run: |
-          npm config set //registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}
+          npm config set //registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}"
           npm publish --tag=ci
