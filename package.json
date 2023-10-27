@@ -1,0 +1,33 @@
+{
+  "name": "@chronark/sdk",
+  "description": "Typescritp SDK Template",
+  "version": "XXX",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chronark/sdk.git"
+  },
+  "author": "Andreas Thomas <dev@chronark.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chronark/sdk/issues"
+  },
+  "homepage": "https://github.com/chronark/sdk#readme",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "./dist"
+  ],
+  "module": "src/index.ts",
+  "devDependencies": {
+    "@biomejs/biome": "^1.3.1",
+    "bun-types": "latest",
+    "tsup": "^7.2.0"
+  },
+  "scripts": {
+    "build": "tsup",
+    "fmt": "biome check --apply ."
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

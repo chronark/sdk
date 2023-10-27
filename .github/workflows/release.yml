@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Set env
+        run: echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+
+      - name: Install bun
+        run: npm i -g bun
+           
+      - name: Set package version
+        run: |
+          bun run ./scripts/set-version.js . ${{ env.VERSION }}
+          echo "export const VERSION='${{ env.VERSION }}'" > ./src/version.ts
+          
+      - name: Install Dependencies
+        run: bun install
+        
+      - name: Build
+        run: bun run build
+
+      - name: Publish
+        if: "!github.event.release.prerelease"
+        working-directory: ./dist
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > .npmrc
+          npm publish --access public
+
+      - name: Publish release candidate
+        if: "github.event.release.prerelease"
+        working-directory: ./dist
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > .npmrc
+          npm publish --access public --tag=next
