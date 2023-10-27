@@ -506,5 +506,5 @@ jobs:
 
       - name: Publish ci version
         run: |
-          npm config set //registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}"
+          npm config set //registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}
           npm publish --tag=ci
