@@ -12,7 +12,7 @@
     "react": "^18",
     "react-dom": "^18",
     "next": "14.0.0",
-    "@chronark/sdk": "../.."
+    "@chronark/sdk": "latest"
   },
   "devDependencies": {
     "typescript": "^5",
