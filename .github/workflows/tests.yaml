@@ -83,7 +83,7 @@ jobs:
     steps:
       - name: Setup repo
         uses: actions/checkout@v3
-        
+
       - name: Setup node
         uses: actions/setup-node@v2
         with:
@@ -104,7 +104,6 @@ jobs:
 
       - name: Test
         run: bun test examples/nextjs/ci.test.ts
-        working-directory: examples/nextjs
 
  
   # deno-deployed:
