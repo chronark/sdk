@@ -495,7 +495,8 @@ jobs:
 
       - name: Set package version
         run: |
-          jq '.version = "${{ steps.version.outputs.version }}"' <<< cat package.json > tmp.json
+          version=$(echo ${{ steps.version.outputs.version }} | sed 's/v//g')
+          jq '.version = "$version"' <<< cat package.json > tmp.json
           mv tmp.json package.json 
 
       - name: Install Dependencies
