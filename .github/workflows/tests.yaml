@@ -65,10 +65,7 @@ jobs:
       - name: Start example
         run: bun run start &
         working-directory: ./examples/nextjs
-        env:
-          NEXT_PUBLIC_UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
-          NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
-
+      
       - name: Test
         run: bun test examples/nextjs/ci.test.ts
         env:
@@ -91,7 +88,7 @@ jobs:
 
       - name: Install bun
         run: npm install -g bun
-        
+
       - name: Install Canary
         run: bun install @chronark/sdk@${{needs.release.outputs.version}}
         working-directory: ./examples/nextjs
@@ -106,6 +103,42 @@ jobs:
       
       - name: Test
         run: bun test examples/nextjs/ci.test.ts
+
+
+  cloudflare-local:
+    needs:
+      - test
+    
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v3
+    
+      - name: Install bun
+        run: npm install -g bun
+        
+      - name: Install Dependencies
+        run: bun install
+            
+      - name: Build
+        run: bun run build
+  
+      - name: Install example
+        run: |
+          npm install
+          npm install @chronark/sdk@../..
+          npm install -g wrangler
+        working-directory: ./examples/cloudflare
+
+      - name: Start example
+        run: wrangler dev & sleep 5
+        working-directory: ./examples/cloudflare
+     
+      - name: Test
+        run: bun test examples/cloudflare/ci.test.ts
+        env:
+          DEPLOYMENT_URL: http://localhost:3000
+
 
  
   # deno-deployed:
@@ -141,98 +174,6 @@ jobs:
   #         DEPLOYMENT_URL: https://upstash-redis-70jbfgxwz310.deno.dev
 
     
-  # cloudflare-workers-local:
-  #   needs:
-  #     - test
-    
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Setup repo
-  #       uses: actions/checkout@v3
-  #     - name: Setup nodejs
-  #       uses: actions/setup-node@v2
-  #       with:
-  #         node-version: 18
-  #     - name: Install bun
-  #       run: npm install -g bun
-      
-  #     - name: Install Dependencies
-  #       run: bun install
-          
-  #     - name: Build
-  #       run: bun run build
-
-  #     - name: Install example
-  #       run: |
-  #         bun install
-  #         bun add @upstash/redis@../../dist
-  #         npm install -g wrangler
-  #       working-directory: examples/cloudflare-workers
-
-  #     - name: Add environment
-  #       run: |
-  #         echo 'account_id = "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"' >> wrangler.toml
-  #         echo '[vars]' >> wrangler.toml
-  #         echo 'UPSTASH_REDIS_REST_URL = "${{ secrets.UPSTASH_REDIS_REST_URL }}"' >> ./wrangler.toml
-  #         echo 'UPSTASH_REDIS_REST_TOKEN = "${{ secrets.UPSTASH_REDIS_REST_TOKEN }}"' >> ./wrangler.toml
-  #       working-directory: examples/cloudflare-workers
-
-  #     - name: Start example
-  #       run: wrangler dev & sleep 10
-  #       working-directory: examples/cloudflare-workers
-  #       env:
-  #         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-  #         UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
-  #         UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
-
-
-  #     - name: Test
-  #       run: bun test examples/cloudflare-workers/ci.test.ts
-  #       env:
-  #         DEPLOYMENT_URL: http://127.0.0.1:8787
-
-  # cloudflare-workers-deployed:  
-  #   concurrency: cloudflare-workers-deployed
-  #   needs:
-  #     - release
-  #   env:
-  #     UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
-  #     UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Setup repo
-  #       uses: actions/checkout@v3
-  #     - name: Setup nodejs
-  #       uses: actions/setup-node@v2
-  #       with:
-  #         node-version: 18
-          
-  #     - name: Install bun
-  #       run: npm install -g bun
-
-    
-
-  #     - name: Install example
-  #       run: |
-  #         bun add @upstash/redis@${{needs.release.outputs.version}}
-  #         npm i -g wrangler 
-  #       working-directory: examples/cloudflare-workers
-
-  #     - name: Add account ID
-  #       run: echo 'account_id = "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"' >> wrangler.toml
-  #       working-directory: examples/cloudflare-workers
-
-  #     - name: Deploy
-  #       run: wrangler publish
-  #       working-directory: examples/cloudflare-workers
-  #       env:
-  #         CLOUDFLARE_API_TOKEN: ${{secrets.CF_API_TOKEN}}
-
-  #     - name: Test
-  #       run: bun test examples/cloudflare-workers/ci.test.ts
-  #       env:
-  #         DEPLOYMENT_URL: https://upstash-redis.upstash.workers.dev
-
   # cloudflare-workers-with-typescript-local:
   #   needs:
   #     - test
@@ -477,7 +418,7 @@ jobs:
     needs:
       - nextjs-local
       
-    name: Release
+    name: Canary Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo

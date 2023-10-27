@@ -10,5 +10,5 @@ export function GET(_req: Request): Response {
   return Response.json({
     shouldBeTrue: isTrue(true),
     shouldBeFalse: isTrue(false),
-    });
+  });
 }
