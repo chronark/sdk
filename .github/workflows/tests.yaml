@@ -137,7 +137,7 @@ jobs:
       - name: Test
         run: bun test examples/cloudflare/ci.test.ts
         env:
-          DEPLOYMENT_URL: http://localhost:3000
+          DEPLOYMENT_URL: http://127.0.0.1:8787
 
 
  
@@ -417,6 +417,7 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     needs:
       - nextjs-local
+      - cloudflare-local
       
     name: Canary Release
     runs-on: ubuntu-latest
@@ -426,7 +427,7 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo "::set-output name=version::0.0.0-ci.${GITHUB_SHA}"
+        run: echo "::set-output name=version::0.0.0-ci.${GITHUB_SHA}-$(date +%s)"
 
       - name: Setup Node
         uses: actions/setup-node@v2
